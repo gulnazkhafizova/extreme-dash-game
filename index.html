@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -147,7 +147,7 @@
     <div id="coins">💰 Coins: 0 EXTR</div>
     <div id="level">🎮 Level: 1</div>
   </div>
-  <div id="restTimer">👁️ Отдохни: 20 сек</div>
+  <div id="restTimer">👁️ Rest: 20 sec</div>
   <div id="message"></div>
   <canvas id="gameCanvas"></canvas>
   <div id="controls">
@@ -158,7 +158,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// === АДАПТИВНЫЙ CANVAS ===
+// === RESPONSIVE CANVAS ===
 function resizeCanvas() {
   const aspectRatio = 2;
   const maxWidth = window.innerWidth * 0.95;
@@ -172,7 +172,7 @@ function resizeCanvas() {
     canvas.width = maxHeight * aspectRatio;
   }
 
-  // Масштабирование для высокой плотности пикселей
+  // Scaling for high pixel density
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = canvas.width + 'px';
   canvas.style.height = canvas.height + 'px';
@@ -187,7 +187,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
+// === GLOBAL VARIABLES ===
 let frame = 0;
 let speed = 4;
 let totalCoins = parseInt(localStorage.getItem('extremeCoins') || '0');
@@ -200,11 +200,11 @@ let currentLevel = 1;
 let levelProgress = 0;
 let combo = 0;
 
-// Таймер отдыха для глаз (правило 20-20-20)
+// Eye rest timer (20-20-20 rule)
 let playTime = 0;
 let restTime = 0;
-const REST_INTERVAL = 1200000; // 20 минут в миллисекундах
-const REST_DURATION = 20; // 20 секунд отдыха
+const REST_INTERVAL = 1200000; // 20 minutes in milliseconds
+const REST_DURATION = 20; // 20 seconds of rest
 let lastRestCheck = Date.now();
 
 const GRAVITY = 0.6;
@@ -215,7 +215,7 @@ const LEVELS = [
   { duration: 3000, reward: 100, speed: 10, obstacleFreq: 40, name: "NIGHTMARE" }
 ];
 
-// === ИГРОК ===
+// === PLAYER ===
 const player = {
   x: 0,
   y: 0,
@@ -236,7 +236,7 @@ function resetPlayer() {
 }
 resetPlayer();
 
-// === УПРАВЛЕНИЕ ===
+// === CONTROLS ===
 function jump() {
   if (gameState === 'playing' && player.jumpsLeft > 0) {
     player.dy = player.jumpPower;
@@ -245,7 +245,7 @@ function jump() {
   } else if (gameState === 'gameOver' || gameState === 'levelComplete') {
     restartGame();
   } else if (gameState === 'resting') {
-    // Во время отдыха нельзя играть
+    // Cannot play during rest
     return;
   }
 }
@@ -264,17 +264,17 @@ canvas.addEventListener("touchstart", (e) => {
 
 canvas.addEventListener("click", jump);
 
-// === МЯГКАЯ ЦВЕТОВАЯ ПАЛИТРА (защита зрения) ===
+// === SOFT COLOR PALETTE (eye protection) ===
 const COLORS = {
-  player: '#5fb3d9',      // Мягкий голубой вместо яркого cyan
-  coin: '#f4c542',        // Мягкий золотой
-  obstacle: '#e85d75',    // Мягкий красный
-  particle: '#7ed957',    // Мягкий зелёный
+  player: '#5fb3d9',      // Soft blue instead of bright cyan
+  coin: '#f4c542',        // Soft gold
+  obstacle: '#e85d75',    // Soft red
+  particle: '#7ed957',    // Soft green
   bg1: '#1a1a2e',
   bg2: '#2a2a3e'
 };
 
-// === СИСТЕМА ЧАСТИЦ ===
+// === PARTICLE SYSTEM ===
 function createParticles(x, y, color, count) {
   for (let i = 0; i < count; i++) {
     particles.push({
@@ -306,20 +306,20 @@ function drawParticles() {
   ctx.globalAlpha = 1;
 }
 
-// === ФОН ===
+// === BACKGROUND ===
 function drawBackground() {
   const dpr = window.devicePixelRatio || 1;
   const w = canvas.width / dpr;
   const h = canvas.height / dpr;
 
-  // Мягкий градиент
+  // Soft gradient
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
   gradient.addColorStop(0, COLORS.bg1);
   gradient.addColorStop(1, COLORS.bg2);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, w, h);
 
-  // Мягкая анимированная сетка
+  // Soft animated grid
   ctx.strokeStyle = "rgba(95,179,217,0.08)";
   ctx.lineWidth = 1;
   for (let i = 0; i < h; i += 40) {
@@ -330,17 +330,17 @@ function drawBackground() {
   }
 }
 
-// === ИГРОК - ОТРИСОВКА ===
+// === PLAYER - RENDERING ===
 function drawPlayer() {
   ctx.save();
   ctx.translate(player.x, player.y);
   ctx.rotate(player.rotation);
 
-  // Мягкое свечение
+  // Soft glow
   ctx.shadowColor = COLORS.player;
   ctx.shadowBlur = 8;
 
-  // Треугольник
+  // Triangle
   ctx.fillStyle = COLORS.player;
   ctx.beginPath();
   ctx.moveTo(0, -player.size / 2);
@@ -351,7 +351,7 @@ function drawPlayer() {
 
   ctx.shadowBlur = 0;
 
-  // Лицо
+  // Face
   ctx.fillStyle = COLORS.bg1;
   ctx.beginPath(); ctx.arc(-6, -1, 3, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(6, -1, 3, 0, Math.PI * 2); ctx.fill();
@@ -362,7 +362,7 @@ function drawPlayer() {
   ctx.restore();
 }
 
-// === ПРЕПЯТСТВИЯ И МОНЕТЫ ===
+// === OBSTACLES AND COINS ===
 function spawnObstacle() {
   const dpr = window.devicePixelRatio || 1;
   const w = canvas.width / dpr;
@@ -374,11 +374,11 @@ function spawnObstacle() {
   let size, y;
 
   if (type === "ground") {
-    // Препятствие на земле - ОБЯЗАТЕЛЬНО нужно прыгать
+    // Ground obstacle - MUST jump
     size = 40 + Math.random() * 30;
-    y = h - size; // Прямо на земле
+    y = h - size; // Right on the ground
   } else {
-    // Воздушные препятствия
+    // Air obstacles
     size = 35 + Math.random() * 35;
     y = Math.random() * (h - size - 80) + 20;
   }
@@ -464,7 +464,7 @@ function drawObstacles() {
       ctx.fillStyle = COLORS.obstacle;
       ctx.fillRect(o.x, o.y, o.size, o.size);
 
-      // Мягкие полоски предупреждения
+      // Soft warning stripes
       ctx.fillStyle = COLORS.coin;
       for (let i = 0; i < o.size; i += 10) {
         ctx.fillRect(o.x + i, o.y, 5, o.size);
@@ -481,17 +481,17 @@ function drawBonuses() {
     ctx.translate(b.x + b.size / 2, b.y + b.size / 2);
     ctx.rotate(b.angle);
 
-    // Мягкое свечение
+    // Soft glow
     ctx.shadowColor = COLORS.coin;
     ctx.shadowBlur = 12;
 
-    // Монета
+    // Coin
     ctx.fillStyle = COLORS.coin;
     ctx.beginPath();
     ctx.arc(0, 0, b.size / 2, 0, Math.PI * 2);
     ctx.fill();
 
-    // Надпись EXTR
+    // EXTR label
     ctx.shadowBlur = 0;
     ctx.fillStyle = COLORS.bg1;
     ctx.font = `bold ${b.size * 0.4}px Arial`;
@@ -503,9 +503,9 @@ function drawBonuses() {
   });
 }
 
-// === КОЛЛИЗИИ ===
+// === COLLISIONS ===
 function isColliding(a, b) {
-  const margin = 5; // Более мягкие коллизии
+  const margin = 5; // Softer collisions
   return a.x + margin < b.x + b.size &&
          a.x + a.size - margin > b.x &&
          a.y + margin < b.y + b.size &&
@@ -513,24 +513,24 @@ function isColliding(a, b) {
 }
 
 function checkCollisions() {
-  // Проверка препятствий
+  // Check obstacles
   obstacles.forEach(o => {
     if (isColliding(player, o)) {
       gameState = 'gameOver';
       createParticles(player.x, player.y, COLORS.obstacle, 20);
 
-      // ВСЕ МОНЕТЫ СГОРАЮТ - totalCoins тоже обнуляются!
+      // ALL COINS BURN - totalCoins are also reset!
       const lostCoins = totalCoins;
       totalCoins = 0;
       sessionCoins = 0;
       localStorage.setItem('extremeCoins', '0');
 
       showMessage("💀 GAME OVER! 💀",
-        `ВСЕ МОНЕТЫ СГОРЕЛИ! 🔥<br><span style="font-size:0.7em; color:${COLORS.obstacle}">Потеряно: ${lostCoins} EXTR</span><br><span style="font-size:0.6em">Начни с Level 1</span><br><span style="font-size:0.5em">Tap to restart</span>`);
+        `ALL COINS BURNED! 🔥<br><span style="font-size:0.7em; color:${COLORS.obstacle}">Lost: ${lostCoins} EXTR</span><br><span style="font-size:0.6em">Start from Level 1</span><br><span style="font-size:0.5em">Tap to restart</span>`);
     }
   });
 
-  // Проверка монет
+  // Check coins
   bonuses.forEach((b, i) => {
     if (isColliding(player, b)) {
       sessionCoins += b.value;
@@ -555,17 +555,17 @@ function showMessage(title, subtitle = '') {
   msg.style.display = 'block';
 }
 
-// === ТАЙМЕР ОТДЫХА ДЛЯ ГЛАЗ (правило 20-20-20) ===
+// === EYE REST TIMER (20-20-20 rule) ===
 function checkRestTime() {
   const now = Date.now();
   const elapsed = now - lastRestCheck;
 
   if (gameState === 'playing' && elapsed >= REST_INTERVAL) {
-    // Пора отдохнуть!
+    // Time to rest!
     gameState = 'resting';
     restTime = REST_DURATION;
-    showMessage("👁️ ПЕРЕРЫВ ДЛЯ ГЛАЗ! 👁️",
-      `<span style="font-size:0.8em; color:${COLORS.particle}">Посмотри вдаль на 20 секунд<br>Береги своё зрение! 💚</span>`);
+    showMessage("👁️ EYE BREAK! 👁️",
+      `<span style="font-size:0.8em; color:${COLORS.particle}">Look at a distant object for 20 seconds<br>Take care of your vision! 💚</span>`);
     document.getElementById("restTimer").style.display = 'block';
     lastRestCheck = now;
   }
@@ -575,7 +575,7 @@ function updateRestTimer() {
   if (gameState === 'resting') {
     if (restTime > 0) {
       restTime--;
-      document.getElementById("restTimer").textContent = `👁️ Отдохни: ${restTime} сек`;
+      document.getElementById("restTimer").textContent = `👁️ Rest: ${restTime} sec`;
       if (restTime === 0) {
         gameState = 'playing';
         hideMessage();
@@ -585,7 +585,7 @@ function updateRestTimer() {
   }
 }
 
-// Проверка каждые 5 секунд
+// Check every 5 seconds
 setInterval(() => {
   checkRestTime();
   updateRestTimer();
@@ -595,11 +595,11 @@ function hideMessage() {
   document.getElementById("message").style.display = 'none';
 }
 
-// === ФИЗИКА И ЛОГИКА ===
+// === PHYSICS AND LOGIC ===
 function updatePhysics() {
   if (gameState !== 'playing') return;
 
-  playTime++;  // Счётчик игрового времени
+  playTime++;  // Game time counter
 
   frame++;
   levelProgress = frame;
@@ -607,14 +607,14 @@ function updatePhysics() {
   const dpr = window.devicePixelRatio || 1;
   const h = canvas.height / dpr;
 
-  // Гравитация
+  // Gravity
   player.dy += GRAVITY;
   player.y += player.dy;
 
-  // Вращение игрока
+  // Player rotation
   player.rotation += 0.05;
 
-  // Границы экрана
+  // Screen boundaries
   if (player.y - player.size / 2 <= 0) {
     player.y = player.size / 2;
     player.dy = Math.max(0, player.dy);
@@ -625,26 +625,26 @@ function updatePhysics() {
     player.jumpsLeft = 2;
   }
 
-  // Генерация объектов
+  // Object generation
   const level = LEVELS[currentLevel - 1];
 
-  // Чем выше уровень - тем чаще препятствия
+  // Higher level - more frequent obstacles
   if (frame % (level?.obstacleFreq || 80) === 0) spawnObstacle();
 
-  // Дополнительные наземные препятствия на сложных уровнях
+  // Additional ground obstacles on hard levels
   if (currentLevel >= 2 && frame % 120 === 0) {
     spawnGroundObstacle();
   }
 
-  // Монеты появляются реже на сложных уровнях
+  // Coins appear less frequently on hard levels
   if (frame % (150 + currentLevel * 20) === 0) spawnBonus();
 
-  // Постепенное ускорение до максимума уровня
+  // Gradual acceleration to level maximum
   if (frame % 300 === 0) {
     speed = Math.min(speed + 0.5, level?.speed || 10);
   }
 
-  // Обновление объектов
+  // Update objects
   obstacles.forEach(o => {
     o.x -= speed;
     if (o.type === "saw") o.angle += 0.1;
@@ -660,7 +660,7 @@ function updatePhysics() {
   updateParticles();
   checkCollisions();
 
-  // Проверка завершения уровня
+  // Check level completion
   if (level && frame >= level.duration) {
     completeLevel();
   }
@@ -670,7 +670,7 @@ function completeLevel() {
   gameState = 'levelComplete';
   const level = LEVELS[currentLevel - 1];
 
-  // Сохраняем награду + собранные монеты в totalCoins
+  // Save reward + collected coins to totalCoins
   const levelReward = level.reward;
   totalCoins += levelReward + sessionCoins;
   localStorage.setItem('extremeCoins', totalCoins.toString());
@@ -679,30 +679,30 @@ function completeLevel() {
 
   if (currentLevel < LEVELS.length) {
     showMessage(`🎉 LEVEL ${currentLevel} COMPLETE! 🎉`,
-      `🏆 Награда: ${levelReward} EXTR<br>💰 Собрано: ${sessionCoins} EXTR<br>✅ Сохранено в банк: ${levelReward + sessionCoins} EXTR<br>💎 Всего в банке: ${totalCoins} EXTR<br><br><span style="font-size:0.7em; color:${COLORS.coin}">⚠️ Умрёшь - потеряешь ВСЁ!</span><br><span style="font-size:0.6em">Tap to Level ${currentLevel + 1}</span>`);
+      `🏆 Reward: ${levelReward} EXTR<br>💰 Collected: ${sessionCoins} EXTR<br>✅ Saved to bank: ${levelReward + sessionCoins} EXTR<br>💎 Total in bank: ${totalCoins} EXTR<br><br><span style="font-size:0.7em; color:${COLORS.coin}">⚠️ Die - lose EVERYTHING!</span><br><span style="font-size:0.6em">Tap to Level ${currentLevel + 1}</span>`);
   } else {
     showMessage(`🏆 ALL LEVELS COMPLETE! 🏆`,
-      `💎 ВЫИГРАЛ: ${totalCoins} EXTR!<br><span style="font-size:0.7em">Можно вывести на TON кошелёк</span><br><span style="font-size:0.6em">Tap to restart</span>`);
+      `💎 WON: ${totalCoins} EXTR!<br><span style="font-size:0.7em">Can withdraw to TON wallet</span><br><span style="font-size:0.6em">Tap to restart</span>`);
   }
 
-  // Сбрасываем sessionCoins для следующего уровня
+  // Reset sessionCoins for next level
   sessionCoins = 0;
 }
 
 function restartGame() {
   if (gameState === 'levelComplete' && currentLevel < LEVELS.length) {
-    // Переход на следующий уровень
+    // Move to next level
     currentLevel++;
   } else if (gameState === 'gameOver') {
-    // При смерти - ВСЕГДА возврат на Level 1
+    // On death - ALWAYS return to Level 1
     currentLevel = 1;
     sessionCoins = 0;
-    // totalCoins уже обнулены в checkCollisions
+    // totalCoins already reset in checkCollisions
   } else if (currentLevel >= LEVELS.length) {
-    // Прошли все уровни - начинаем заново (можно забрать монеты)
+    // Completed all levels - start over (can withdraw coins)
     currentLevel = 1;
     sessionCoins = 0;
-    // totalCoins сохраняются!
+    // totalCoins are saved!
   }
 
   gameState = 'playing';
@@ -719,7 +719,7 @@ function restartGame() {
   updateUI();
 }
 
-// === ПРОГРЕСС БАР ===
+// === PROGRESS BAR ===
 function drawProgressBar() {
   if (gameState !== 'playing') return;
 
@@ -735,24 +735,24 @@ function drawProgressBar() {
   const x = (w - barWidth) / 2;
   const y = 20;
 
-  // Фон
+  // Background
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillRect(x, y, barWidth, barHeight);
 
-  // Прогресс
+  // Progress
   const gradient = ctx.createLinearGradient(x, 0, x + barWidth * progress, 0);
   gradient.addColorStop(0, COLORS.player);
   gradient.addColorStop(1, COLORS.particle);
   ctx.fillStyle = gradient;
   ctx.fillRect(x, y, barWidth * progress, barHeight);
 
-  // Обводка
+  // Border
   ctx.strokeStyle = COLORS.player;
   ctx.lineWidth = 2;
   ctx.strokeRect(x, y, barWidth, barHeight);
 }
 
-// === ГЛАВНЫЙ ИГРОВОЙ ЦИКЛ ===
+// === MAIN GAME LOOP ===
 function loop() {
   updatePhysics();
   drawBackground();
@@ -765,7 +765,7 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// === ИНИЦИАЛИЗАЦИЯ ===
+// === INITIALIZATION ===
 updateUI();
 hideMessage();
 loop();
